@@ -19,7 +19,7 @@ module Mint.Token {
 }
 
 module Mint {
-  const TOKENS = [
+  const TOKEN_RULES = [
     {"(?:module|fun|const|and|or|true|false)\\b", (s : String) { Mint.Token::Keyword(s) }},
     {"(?:=>|==|!=|&&|\\|\\||\\|>|[(){}[\\].,:/*+\\-=])", (s : String) { Mint.Token::Op(s) }},
     {"[A-Z][a-zA-Z0-9_]*", (s : String) { Mint.Token::CapitalName(s) }},
@@ -28,13 +28,13 @@ module Mint {
   ]
 
   const TOKEN_REGEXP = with Regexp {
-      createWithOptions(
-        for (tok of TOKENS) {
-          "(" + tok[0] + ")"
-        }
-        |> String.join("|"),
-        { caseInsensitive = false, multiline = true, unicode = true, global = true, sticky = false }
-      )
+    createWithOptions(
+      for (tok of TOKEN_RULES) {
+        "(" + tok[0] + ")"
+      }
+      |> String.join("|"),
+      { caseInsensitive = false, multiline = true, unicode = true, global = true, sticky = false }
+    )
   }
 
   fun tokens(s : String) {
@@ -42,7 +42,7 @@ module Mint {
       for (m of TOKEN_REGEXP |> matches(s)) {
         try {
           x = m.submatches |> Array.indexOf(m.match)
-          (TOKENS[x] or INTERNAL_ERROR)[1](m.match)
+          (TOKEN_RULES[x] or INTERNAL_ERROR)[1](m.match)
         }
       }
     }
