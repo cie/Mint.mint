@@ -26,14 +26,10 @@ module Mint {
   const TOKENS = [
     {"\\b(?:module|fun|const|and|or)\\b", (s : String) { Mint.Token::Keyword(s) }},
     {"(?:[(){}[\\].,:/*+\\-=])", (s : String) { Mint.Token::Op(s) }},
-    {"\\b[A-Za-z_]+\\b", (s : String) {
-      Mint.Token::Name(s, {var = false, constant = true, mod = true}) }},
     {"\\b[A-Z][A-Z_]+\\b", (s : String) { 
       Mint.Token::Name(s, {var = false, constant = true, mod = false}) }},
     {"\\b[A-Z][a-zA-Z]*\\b", (s : String) {
       Mint.Token::Name(s, {var = false, constant = false, mod = true}) }},
-    {"\\b[A-Z][a-zA-Z_]*", (s : String) { 
-      Mint.Token::Name(s, {var = false, constant = false, mod = false}) }},
     {"\\b[a-z][a-zA-Z]*", (s : String) { 
       Mint.Token::Name(s, {var = true, constant = false, mod = false}) }},
     {"\\b[a-z][a-zA-Z_]*", (s : String) { 
@@ -57,9 +53,10 @@ module Mint {
       for (m of TOKEN_REGEXP |> matches(s)) {
         try {
           x = m.submatches |> Array.indexOf(m.match)
-          (TOKENS[x] or {"",(s: String){Mint.Token::Invalid("", "internal error")}})[1](m.match)
+          (TOKENS[x] or INTERNAL_ERROR)[1](m.match)
         }
       }
     }
   }
+  const INTERNAL_ERROR = {"",(s: String){Mint.Token::Invalid("", "internal error")}}
 }

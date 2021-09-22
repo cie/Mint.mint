@@ -4,43 +4,57 @@ record Mint.Loc {
   offset : Number
 }
 
-enum Mint.ParseResult(t) {
-  Ok(t, Array(Mint.Token))
-  Err(String)
- /* , Mint.Loc, Mint.Loc */
-}
-
-enum Mint.Grammar(t) {
-  T(Mint.Token, t)
   /*
+  T(Mint.Token, t)
   Match(Function(Mint.Token, Mint.ParseResult(t)))
   Some(Mint.Grammar(a), Function(Array(a), t))
   Seq2(Mint.Grammar(a), Mint.Grammar(b), Function(a, b, t))
   Seq3(Mint.Grammar(a), Mint.Grammar(b), Mint.Grammar(c), Function(a, b, c, t))
-  */
   Either(Array(Mint.Grammar(t)))
-}
+  */
 
 module Mint.Grammar {
-  fun keyword (name : String, value : t) {
-    (tokens : Array(Mint.Token)) {
-      case (tokens) {
-        [first, ...rest] => case(first) {
-          Mint.Token::Keyword(name) => Mint.ParseResult::Ok(value, rest)
-          => Mint.ParseResult::Err("expected " + name)
-        }
-        => Mint.ParseResult::Err("expected " + name)
+  /*fun keyword (name : String, tokens : Array(Mint.Token)) {
+    takeOne("`#{name}`", tokens) |> andThen((t : token) {
+      if (t == Mint.Token::Keyword(name)) {
+        Result.ok({void, rest})
       }
+      case (t) {
+        Mint.Token::Keyword(x) => Result.ok({void, rest})
+        => Result.error({"`#{name}`", tokens})
+      }
+    })
+    case (tokens) {
+      [a, ...rest] => case (a) { Mint.Token::Keyword(name) => Result.ok({void, rest})
+      => Result.error({"`#{name}`", tokens}) } => Result.error({"`#{name}`", tokens})
     }
   }
-  const FILE = keyword("module")
+  fun take (tokens : Array(Mint.Token))
+  fun parse(g : Mint.Grammar(t), tokens : Array(Mint.Token)) {
+    case (g) { Mint.Grammar::G(name, fn) => fn(tokens) }
+  }*/
+
+  fun t(token : Mint.Token, tokens : Array(Mint.Token)) {
+    case (tokens)
+    if (tokens |> Array.isEmpty) {
+      Result.ok({void, tokens})
+    } else {
+      Result.error({"end of file", tokens})
+    }
+  }
+
+  fun eof(tokens : Array(Mint.Token)) {
+    if (tokens |> Array.isEmpty) {
+      Result.ok({void, tokens})
+    } else {
+      Result.error({"end of file", tokens})
+    }
+  }
+  const FILE = eof
 }
 
-module Mint.ParseResult {
-  fun toString(r : Mint.ParseResult(Mint.File)) {
-    case(r) {
-      Mint.ParseResult::Ok(file, rest) => Mint.AST.fileToString(file)
-      Mint.ParseResult::Err(msg) => msg
-    }
+module Mint {
+  fun parse(s : String) {
+    s |> Mint.tokens |> Mint.Grammar:FILE
   }
 }

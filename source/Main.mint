@@ -1,7 +1,10 @@
 component Main {
   state code : String = ""
 
-  get compiled { code |> Mint.tokens |> Mint.Grammar:FILE |> Mint.ParseResult.toString }
+  get compiled {
+    /* code |> Mint.tokens |> Mint.Grammar:FILE |> Mint.ParseResult.toString */
+    "implementing..."
+  }
 
   style app {
     display: flex;
