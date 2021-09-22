@@ -14,26 +14,6 @@ record Mint.Loc {
   */
 
 module Mint.Grammar {
-  /*fun keyword (name : String, tokens : Array(Mint.Token)) {
-    takeOne("`#{name}`", tokens) |> andThen((t : token) {
-      if (t == Mint.Token::Keyword(name)) {
-        Result.ok({void, rest})
-      }
-      case (t) {
-        Mint.Token::Keyword(x) => Result.ok({void, rest})
-        => Result.error({"`#{name}`", tokens})
-      }
-    })
-    case (tokens) {
-      [a, ...rest] => case (a) { Mint.Token::Keyword(name) => Result.ok({void, rest})
-      => Result.error({"`#{name}`", tokens}) } => Result.error({"`#{name}`", tokens})
-    }
-  }
-  fun take (tokens : Array(Mint.Token))
-  fun parse(g : Mint.Grammar(t), tokens : Array(Mint.Token)) {
-    case (g) { Mint.Grammar::G(name, fn) => fn(tokens) }
-  }*/
-
   fun t(token : Mint.Token, tokens : Array(Mint.Token)) {
     with Mint.Token {
       case (tokens) {
