@@ -35,17 +35,26 @@ module Mint.Grammar {
   }*/
 
   fun t(token : Mint.Token, tokens : Array(Mint.Token)) {
-    case (tokens)
-    if (tokens |> Array.isEmpty) {
-      Result.ok({void, tokens})
-    } else {
-      Result.error({"end of file", tokens})
+    with Mint.Token {
+      case (tokens) {
+        [first, ...rest] =>
+          if (first == token) {
+            Result.ok({void, rest})
+          } else {
+            Result.error({toString(token), tokens})
+          }
+        [] => Result.error({toString(token), []})
+      }
     }
+  }
+
+  fun keyword(s : String) {
+    t(Mint.Token::Keyword(s))
   }
 
   fun eof(tokens : Array(Mint.Token)) {
     if (tokens |> Array.isEmpty) {
-      Result.ok({void, tokens})
+      Result.ok({void, []})
     } else {
       Result.error({"end of file", tokens})
     }

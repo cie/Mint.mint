@@ -20,7 +20,7 @@ suite "Mint tokens" {
     with Test.Context {
       of(Mint.tokens("module  Mod {}")) |> assertEqual([
         Mint.Token::Keyword("module"),
-        Mint.Token::Name("Mod", {var = false, constant = false, mod = true}),
+        Mint.Token::CapitalName("Mod"),
         Mint.Token::Op("{"),
         Mint.Token::Op("}"),
       ])
@@ -30,7 +30,7 @@ suite "Mint tokens" {
     with Test.Context {
       of(Mint.tokens("fun  x() ")) |> assertEqual([
         Mint.Token::Keyword("fun"), 
-        Mint.Token::Name("x", {var = true, constant = false, mod = false}),
+        Mint.Token::SmallName("x"),
         Mint.Token::Op("("),
         Mint.Token::Op(")"),
       ])

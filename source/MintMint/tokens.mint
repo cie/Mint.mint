@@ -1,12 +1,7 @@
-record Mint.NameType {
-  var: Bool,
-  constant: Bool,
-  mod: Bool
-}
-
 enum Mint.Token {
   Keyword(String)
-  Name(String, Mint.NameType)
+  SmallName(String)
+  CapitalName(String)
   Invalid(String, String)
   Op(String)
 }
@@ -14,9 +9,10 @@ enum Mint.Token {
 module Mint.Token {
   fun toString(t: Mint.Token) {
     case (t) {
-      Mint.Token::Keyword(s) => "`" + s + "`"
-      Mint.Token::Name(s, t) => s
-      Mint.Token::Op(s) => s
+      Mint.Token::Keyword(s) => "`#{s}`"
+      Mint.Token::SmallName(s) => "small-letter name"
+      Mint.Token::CapitalName(s) => "capital-letter name"
+      Mint.Token::Op(s) => "`#{s}`"
       Mint.Token::Invalid(s, msg) => "invalid token: " + s + " - " + msg
     }
   }
@@ -24,18 +20,11 @@ module Mint.Token {
 
 module Mint {
   const TOKENS = [
-    {"\\b(?:module|fun|const|and|or)\\b", (s : String) { Mint.Token::Keyword(s) }},
-    {"(?:[(){}[\\].,:/*+\\-=])", (s : String) { Mint.Token::Op(s) }},
-    {"\\b[A-Z][A-Z_]+\\b", (s : String) { 
-      Mint.Token::Name(s, {var = false, constant = true, mod = false}) }},
-    {"\\b[A-Z][a-zA-Z]*\\b", (s : String) {
-      Mint.Token::Name(s, {var = false, constant = false, mod = true}) }},
-    {"\\b[a-z][a-zA-Z]*", (s : String) { 
-      Mint.Token::Name(s, {var = true, constant = false, mod = false}) }},
-    {"\\b[a-z][a-zA-Z_]*", (s : String) { 
-      Mint.Token::Name(s, {var = false, constant = false, mod = false}) }},
-    {"\\S", (s : String) { Mint.Token::Invalid(s,
-      "This character is not allowed") }}
+    {"(?:module|fun|const|and|or|true|false)\\b", (s : String) { Mint.Token::Keyword(s) }},
+    {"(?:=>|==|!=|&&|\\|\\||\\|>|[(){}[\\].,:/*+\\-=])", (s : String) { Mint.Token::Op(s) }},
+    {"[A-Z][a-zA-Z0-9_]*", (s : String) { Mint.Token::CapitalName(s) }},
+    {"[a-z][a-zA-Z0-9_]*", (s : String) { Mint.Token::SmallName(s) }},
+    {"\\S", (s : String) { Mint.Token::Invalid(s, "This character is not allowed") }}
   ]
 
   const TOKEN_REGEXP = with Regexp {
